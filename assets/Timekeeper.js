@@ -30,6 +30,20 @@ export default class Timekeeper {
     window.addEventListener('popstate', e => this._startOrStop(e));
 
     return this;
+
+    // Create Pause and Resume buttons
+    const pauseButton = document.createElement('a');
+    pauseButton.id = 'pauseButton';
+    pauseButton.href = '#pause';
+    pauseButton.textContent = 'Pause';
+    formEl.appendChild(pauseButton);
+
+    const resumeButton = document.createElement('a');
+    resumeButton.id = 'resumeButton';
+    resumeButton.href = '#resume';
+    resumeButton.textContent = 'Resume';
+    formEl.appendChild(resumeButton);
+
   }
 
   alarmActive() {
