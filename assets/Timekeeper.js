@@ -6,6 +6,7 @@ export default class Timekeeper {
   constructor() {
     this.inputNames = ['d', 'h', 'm', 's'];
     this.tracked = {};
+    this.pausedTime = null;
   }
 
   attach(formEl) {
@@ -45,7 +46,11 @@ export default class Timekeeper {
 
   start(seconds, epoch = now()) {
     seconds = parseInt(seconds, 10) || this.inputsToSeconds();
-
+    
+    if (this.pausedTime !== null) {
+      this.pausedTime = null; // Reset the paused time
+    }
+    
     if (seconds) {
       history.pushState({}, document.title, [this.baseUrl, epoch, seconds].join('/'));
       window.scrollTo(0, 0);
@@ -63,11 +68,25 @@ export default class Timekeeper {
     if (!location.href.match(/\#about/)) this.formEl.m.focus();
   }
 
+  pause() {
+    if (this.tid) {
+      clearInterval(this.tid);
+      this.pausedTime = this.ends - now();
+    }
+  }
+
+  resume() {
+    if (this.pausedTime !== null) {
+      this.start(this.pausedTime, now());
+      this.pausedTime = null;
+    }
+  }
+
   toggleAlarm() {
     localStorage.setItem('timer_alarm', this.alarmActive() ? 'off' : 'on');
     this._renderAlarmLink();
-  }
-
+  } 
+  
   _onBlur(input, e) {
     if (!input.value.length) this._renderInput(input, '0');
     localStorage.setItem('timer_' + input.name, input.value);
